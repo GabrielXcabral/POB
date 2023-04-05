@@ -5,7 +5,6 @@
  *
  */
 
-package appconsole;
 
 /*import regras_negocio.Fachada;
 

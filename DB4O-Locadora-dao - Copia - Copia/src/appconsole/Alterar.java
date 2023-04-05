@@ -4,7 +4,7 @@
  * Prof. Fausto Ayres
  *
  */
-package appconsole;
+
 
 /*import regras_negocio.Fachada;
 

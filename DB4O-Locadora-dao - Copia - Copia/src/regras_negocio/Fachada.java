@@ -144,9 +144,6 @@ public class Fachada {
 		ArrayList <Integer> codigosinseridos = new ArrayList<>();
 		//verificar regras de negocio
 		List<Ingresso> ingressos = listarIngressos();
-		for(Ingresso i : ingressos){
-			codigosinseridos.add(i.getCodigo());
-		}
 
 		//System.out.println(ingressos);
 
@@ -155,6 +152,12 @@ public class Fachada {
 			throw new Exception ("ID: " + id + " => Invalido" + "\n" +
 		"JOGO NÃO EXISTE...");
 		
+		/*for(Ingresso i : ingressos){
+			codigosinseridos.add(i.getCodigo());
+		}*/
+		
+		
+		Ingresso ing = daoingresso.read(id);
 		
 		//gerar codigo aleatório
 		//verificar unicididade do codigo no sistema; 
@@ -186,10 +189,10 @@ public class Fachada {
 		DAO.begin();
 		ArrayList <Integer> codigosinseridos = new ArrayList<>();
 		//verificar regras de negocio
-		List<Ingresso> ingressos = listarIngressos();
+		/*List<Ingresso> ingressos = listarIngressos();
 		for(Ingresso i : ingressos){
 			codigosinseridos.add(i.getCodigo());
-		}
+		}*/
 		
 		ArrayList<Jogo> jogos = new ArrayList<>();
 		
@@ -202,19 +205,19 @@ public class Fachada {
 				jogos.clear();
 				throw new Exception ("ID: " + id  + " n�o existe...");	
 			}
-			jogos.add(id_);
-			
-			
+			jogos.add(id_);					
 		}
 		
 		//gerar codigo aleat�rio 
 		int codigo;
+		Ingresso ing = null;
 		do {
 			codigo = new Random().nextInt(1000000);
+			ing = daoingresso.read(codigo);
 			//verificar unicididade no sistema 
-		}while(codigosinseridos.contains(codigo));
+		}while(ing != null);
 		
-		codigosinseridos.add(codigo);
+		//codigosinseridos.add(codigo);
 		
 		
 		//criar o ingresso grupo 
@@ -238,6 +241,62 @@ public class Fachada {
 		daoingressogrupo.create(ingresso);
 		DAO.commit();
 		return ingresso;
+	}
+	
+	public static void	apagarIngresso(int codigo) throws Exception {
+		DAO.begin();
+		//o codigo refere-se a ingresso individual ou grupo
+		//verificar regras de negocio
+		//remover o relacionamento entre o ingresso e o(s) jogo(s) ligados a ele
+
+		
+		Ingresso ingresso = daoingresso.read(codigo);
+		if (ingresso instanceof IngressoGrupo grupo) {
+			ArrayList<Jogo> jogos = grupo.getJogos();
+			for (Jogo j : jogos) {
+				j.remover(grupo);
+				j.setEstoque(j.getEstoque()+1);
+			}
+		}
+		else 
+			if (ingresso instanceof IngressoIndividual individuo) {
+				Jogo jogo = individuo.getJogo();
+				jogo.remover(individuo);
+				jogo.setEstoque(jogo.getEstoque()+1);
+			}
+
+		//apagar ingresso no banco
+
+		DAO.commit();
+	}
+	
+	public static void	apagarTime(String nome) throws Exception {
+		DAO.begin();
+		//verificar regras de negocio
+		//Um time não poderá ser excluído se possuir jogos
+		
+		//apagar time no banco
+		Time time = daotime.read(nome);
+		if(time !=null)
+		{
+			daotime.delete(time);
+		};
+		
+		
+		DAO.commit();
+	}
+
+	public static void 	apagarJogo(int id) throws Exception{
+		DAO.begin();
+		//verificar regras de negocio
+		//Um jogo não poderá ser excluído se possuir ingressos
+
+		//apagar jogo no banco
+		Jogo jogo = daojogo.read(id);
+		if(jogo != null) {
+			daojogo.delete(jogo);
+		};
+		DAO.commit();
 	}
 
 	

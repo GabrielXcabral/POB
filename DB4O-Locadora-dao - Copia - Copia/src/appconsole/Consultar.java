@@ -5,7 +5,6 @@
  *
  */
 
-package appconsole;
 
 /*import modelo.Aluguel;
 import modelo.Carro;
