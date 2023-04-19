@@ -47,7 +47,7 @@ public class DAOJogo extends DAO<Jogo>{
 				return null;
 			}				
 		}
-		
+		//verifica os jogos que não tem ingresso
 		public List<Jogo> verificaringressos(){
 			int n = 0;
 			Query q;
