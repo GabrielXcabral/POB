@@ -73,11 +73,11 @@ public class DAOJogo extends DAO<Jogo>{
 			}
 		}
 		
-		public List<Jogo> jogosdotimeCasa (String time){
+		public List<Jogo> jogosdotimeCasa (String nomeDoTime){
 			Query q;
 			q = manager.query();
 			q.constrain(Jogo.class);
-			q.descend("time1").descend("nome").constrain(time);
+			q.descend("time1").descend("nome").constrain(nomeDoTime);
 			List <Jogo> jogos = q.execute();
 			if(jogos.size() > 0) {
 				return jogos;
